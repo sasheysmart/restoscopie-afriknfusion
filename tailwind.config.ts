@@ -10,21 +10,24 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          orange: "#D4521A",
-          light: "#FDF6F0",
-          text: "#1C1C1C",
-          success: "#2E7D32",
-          warning: "#F59E0B",
+          primary: "#D4521A",
+          background: "#FFFFFF",
+          surface: "#F9FAFB",
+          border: "#E5E7EB",
+          text: "#111827",
+          secondary: "#6B7280",
+          success: "#16A34A",
+          warning: "#D97706",
           danger: "#DC2626",
           info: "#2563EB",
         },
       },
       borderRadius: {
-        xl: "1rem",
-        "2xl": "1.25rem",
+        lg: "0.5rem",
+        xl: "0.75rem",
       },
       boxShadow: {
-        soft: "0 8px 24px rgba(0, 0, 0, 0.08)",
+        soft: "0 1px 2px rgba(0, 0, 0, 0.06)",
       },
     },
   },

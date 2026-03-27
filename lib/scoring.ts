@@ -66,7 +66,7 @@ export function getScoreMeta(score: number): {
     return {
       label: "Excellent",
       message: "Félicitations, maintenez la pression !",
-      colorClass: "text-brand-success",
+      colorClass: "text-[#16A34A]",
       variant: "success",
     };
   }
@@ -74,7 +74,7 @@ export function getScoreMeta(score: number): {
     return {
       label: "Bien",
       message: "Bonne maîtrise, quelques insuffisances",
-      colorClass: "text-blue-700",
+      colorClass: "text-[#2563EB]",
       variant: "info",
     };
   }
@@ -82,7 +82,7 @@ export function getScoreMeta(score: number): {
     return {
       label: "Moyen",
       message: "Des efforts encore à faire",
-      colorClass: "text-amber-700",
+      colorClass: "text-[#D97706]",
       variant: "warning",
     };
   }
