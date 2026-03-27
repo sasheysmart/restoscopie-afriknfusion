@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: var(--font-geist-sans), Arial, sans-serif;
+  background-color: #fdf6f0;
+  background-image: url("data:image/svg+xml,%3Csvg width='72' height='72' viewBox='0 0 72 72' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23D4521A' stroke-opacity='0.08' stroke-width='1.2'%3E%3Cpath d='M8 8h20v20H8zM44 8h20v20H44zM8 44h20v20H8zM44 44h20v20H44z'/%3E%3Cpath d='M28 18h16M28 54h16M18 28v16M54 28v16'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+* {
+  @apply transition-all duration-200;
+}

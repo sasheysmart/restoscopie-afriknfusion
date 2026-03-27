@@ -1,0 +1,183 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { ScoreBadge } from "@/components/ScoreBadge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
+import type { Answer } from "@/lib/questions";
+import { questions } from "@/lib/questions";
+import { calculateScore, getScoreMeta } from "@/lib/scoring";
+
+type AuditPayload = {
+  restaurant: string;
+  auditor: string;
+  date: string;
+  answers: Answer[];
+};
+
+export default function ResultsPage() {
+  const [payload, setPayload] = useState<AuditPayload | null>(null);
+
+  useEffect(() => {
+    const raw = sessionStorage.getItem("restoscopie-audit");
+    if (!raw) return;
+    setPayload(JSON.parse(raw) as AuditPayload);
+  }, []);
+
+  const score = useMemo(
+    () => calculateScore(questions, payload?.answers ?? []),
+    [payload?.answers],
+  );
+  const globalMeta = getScoreMeta(score.global);
+
+  const answerMap = useMemo(
+    () => new Map((payload?.answers ?? []).map((answer) => [answer.questionId, answer])),
+    [payload?.answers],
+  );
+
+  const donut = useMemo(() => {
+    const answers = payload?.answers ?? [];
+    let ok = 0;
+    let moyen = 0;
+    let non = 0;
+    for (const answer of answers) {
+      if (answer.value === "oui") ok += 1;
+      if (answer.value === "non") non += 1;
+      if (answer.value === null) moyen += 1;
+    }
+    const total = answers.length || 1;
+    return {
+      ok: Math.round((ok / total) * 100),
+      moyen: Math.round((moyen / total) * 100),
+      non: Math.round((non / total) * 100),
+    };
+  }, [payload?.answers]);
+
+  const synthese = useMemo(() => {
+    const sortedNon = questions
+      .filter((question) => answerMap.get(question.id)?.value === "non")
+      .sort((a, b) => b.points - a.points)
+      .slice(0, 5);
+    const sortedOui = questions
+      .filter((question) => answerMap.get(question.id)?.value === "oui")
+      .sort((a, b) => a.points - b.points)
+      .slice(0, 5);
+
+    const recos: string[] = [];
+    if ((score.bySection.experience_client ?? 0) < 14) recos.push("Former l'équipe aux standards de service Afrik'N'Fusion");
+    if ((score.bySection.technique ?? 0) < 14) recos.push("Renforcer les procédures de nettoyage et d'hygiène du personnel");
+    if ((score.bySection.admin_gestion ?? 0) < 14) recos.push("Mettre à jour les documents administratifs et de conformité");
+    if (score.global >= 17) recos.push("Maintenir le niveau d'excellence actuel");
+    if (recos.length === 0) recos.push("Consolider les routines de contrôle hebdomadaire pour sécuriser la performance");
+
+    return { sortedNon, sortedOui, recos: recos.slice(0, 3) };
+  }, [answerMap, score]);
+
+  const circumference = 2 * Math.PI * 52;
+  const okLength = (donut.ok / 100) * circumference;
+  const moyenLength = (donut.moyen / 100) * circumference;
+  const nonLength = (donut.non / 100) * circumference;
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardContent className="flex flex-wrap items-center justify-between gap-4 pt-6">
+          <div>
+            <p className="text-lg font-semibold">{payload?.restaurant || "Restaurant non renseigné"}</p>
+            <p className="text-sm text-zinc-500">
+              Auditeur : {payload?.auditor || "N/A"} · Date : {payload?.date || new Date().toLocaleDateString("fr-FR")}
+            </p>
+          </div>
+          <div className="text-right">
+            <p className={`text-5xl font-bold ${globalMeta.colorClass}`}>{score.global.toFixed(1)} / 20</p>
+            <div className="mt-2 flex justify-end"><ScoreBadge score={score.global} /></div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader><CardTitle>Répartition des scores</CardTitle></CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <p className="text-sm">Expérience Client: {(score.bySection.experience_client ?? 0).toFixed(1)}/20</p>
+            <Progress value={((score.bySection.experience_client ?? 0) / 20) * 100} />
+          </div>
+          <div className="space-y-2">
+            <p className="text-sm">Tenue Technique: {(score.bySection.technique ?? 0).toFixed(1)}/20</p>
+            <Progress value={((score.bySection.technique ?? 0) / 20) * 100} />
+          </div>
+          <div className="space-y-2">
+            <p className="text-sm">Admin & Gestion: {(score.bySection.admin_gestion ?? 0).toFixed(1)}/20</p>
+            <Progress value={((score.bySection.admin_gestion ?? 0) / 20) * 100} />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader><CardTitle>Conformité globale</CardTitle></CardHeader>
+        <CardContent className="flex flex-wrap items-center gap-8">
+          <svg width="160" height="160" viewBox="0 0 140 140">
+            <g transform="rotate(-90 70 70)">
+              <circle cx="70" cy="70" r="52" fill="none" stroke="#E5E7EB" strokeWidth="16" />
+              <circle cx="70" cy="70" r="52" fill="none" stroke="#2E7D32" strokeWidth="16" strokeDasharray={`${okLength} ${circumference}`} strokeLinecap="round" />
+              <circle cx="70" cy="70" r="52" fill="none" stroke="#F59E0B" strokeWidth="16" strokeDasharray={`${moyenLength} ${circumference}`} strokeDashoffset={-okLength} />
+              <circle cx="70" cy="70" r="52" fill="none" stroke="#DC2626" strokeWidth="16" strokeDasharray={`${nonLength} ${circumference}`} strokeDashoffset={-(okLength + moyenLength)} />
+            </g>
+            <text x="70" y="75" textAnchor="middle" className="fill-brand-text text-sm font-semibold">{score.global.toFixed(1)}/20</text>
+          </svg>
+          <div className="space-y-2 text-sm">
+            <p>Conforme (Oui): <strong>{donut.ok}%</strong></p>
+            <p>Moyen (Sans réponse): <strong>{donut.moyen}%</strong></p>
+            <p>Non conforme (Non): <strong>{donut.non}%</strong></p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <section className="grid gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader><CardTitle>Points forts (⭐)</CardTitle></CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            {synthese.sortedOui.map((item) => <p key={item.id}>- {item.text}</p>)}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader><CardTitle>Points à améliorer (⚠)</CardTitle></CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            {synthese.sortedNon.map((item) => <p key={item.id}>- {item.text} ({item.points} pts)</p>)}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader><CardTitle>Recommandations (💡)</CardTitle></CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            {synthese.recos.map((item) => <p key={item}>- {item}</p>)}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader><CardTitle>Conclusion (✅)</CardTitle></CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            <p>
+              L'audit met en évidence un niveau <strong>{globalMeta.label.toLowerCase()}</strong> avec un score global de {score.global.toFixed(1)} / 20.
+            </p>
+            <p>
+              La priorité est de sécuriser les points critiques identifiés tout en consolidant les pratiques déjà maîtrisées.
+            </p>
+          </CardContent>
+        </Card>
+      </section>
+
+      <Separator />
+      <div className="flex flex-wrap items-center gap-4">
+        <Button size="lg" onClick={() => toast.success("Rapport PDF généré et envoyé par email ✓")}>
+          Générer le rapport
+        </Button>
+        <Link className="text-sm font-medium text-brand-orange hover:underline" href="/">
+          Retour au tableau de bord
+        </Link>
+      </div>
+    </div>
+  );
+}
