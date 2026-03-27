@@ -89,7 +89,7 @@ export default function AuditPage() {
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Nom de l'auditeur</label>
+              <label className="text-sm font-medium">Nom de l&apos;auditeur</label>
               <input
                 className="h-10 w-full rounded-xl border border-zinc-300 bg-white px-3 text-sm"
                 placeholder="Ex: Aminata D."

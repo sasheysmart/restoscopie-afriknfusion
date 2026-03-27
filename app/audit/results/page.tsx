@@ -160,7 +160,7 @@ export default function ResultsPage() {
           <CardHeader><CardTitle>Conclusion (✅)</CardTitle></CardHeader>
           <CardContent className="space-y-2 text-sm">
             <p>
-              L'audit met en évidence un niveau <strong>{globalMeta.label.toLowerCase()}</strong> avec un score global de {score.global.toFixed(1)} / 20.
+              L&apos;audit met en évidence un niveau <strong>{globalMeta.label.toLowerCase()}</strong> avec un score global de {score.global.toFixed(1)} / 20.
             </p>
             <p>
               La priorité est de sécuriser les points critiques identifiés tout en consolidant les pratiques déjà maîtrisées.
