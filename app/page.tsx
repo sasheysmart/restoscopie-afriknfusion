@@ -11,21 +11,6 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { restaurants } from "@/lib/questions";
-import { cn } from "@/lib/utils";
-
-function getScoreColor(score: number) {
-  if (score >= 17) return "var(--progress-excellent)";
-  if (score >= 15) return "var(--progress-good)";
-  if (score >= 13) return "var(--progress-mid)";
-  return "var(--progress-low)";
-}
-
-function scoreValueClass(score: number) {
-  if (score >= 17) return "text-score-excellent";
-  if (score >= 15) return "text-score-good";
-  if (score >= 13) return "text-score-mid";
-  return "text-score-low";
-}
 
 export default function Home() {
   return (
@@ -36,9 +21,7 @@ export default function Home() {
             <CardDescription>Moyenne réseau</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold" style={{ color: "var(--brand)" }}>
-              15.25 / 20
-            </div>
+            <div className="text-3xl font-bold text-primary">15.25 / 20</div>
           </CardContent>
         </Card>
         <Card>
@@ -46,9 +29,7 @@ export default function Home() {
             <CardDescription>Meilleur établissement</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold" style={{ color: "var(--success)" }}>
-              Paris 20
-            </div>
+            <div className="text-3xl font-bold text-foreground">Paris 20</div>
           </CardContent>
         </Card>
         <Card>
@@ -56,7 +37,7 @@ export default function Home() {
             <CardDescription>Établissement à risque</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-destructive">Le Havre</div>
+            <div className="text-3xl font-bold text-muted-foreground">Le Havre</div>
           </CardContent>
         </Card>
       </div>
@@ -75,26 +56,18 @@ export default function Home() {
               <div className="space-y-1">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Score</span>
-                  <span className={cn("font-semibold", scoreValueClass(r.score))}>
+                  <span className="font-semibold text-foreground">
                     {r.score} / 20
                   </span>
                 </div>
-                <Progress
-                  value={(r.score / 20) * 100}
-                  className="h-2"
-                  style={{ "--progress-color": getScoreColor(r.score) } as React.CSSProperties}
-                />
+                <Progress value={(r.score / 20) * 100} className="h-2" />
               </div>
               <div className="flex gap-2 pt-1">
                 <Button variant="outline" size="sm" className="flex-1">
                   Voir le détail
                 </Button>
                 <Link href="/audit" className="flex-1">
-                  <Button
-                    size="sm"
-                    className="w-full"
-                    style={{ backgroundColor: "var(--brand)", color: "var(--brand-foreground)" }}
-                  >
+                  <Button size="sm" className="w-full">
                     Lancer un audit
                   </Button>
                 </Link>

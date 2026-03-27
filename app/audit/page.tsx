@@ -40,13 +40,6 @@ const sectionOrder = ["experience_client", "technique", "admin_gestion"] as cons
 
 type Step = 1 | 2;
 
-function scoreValueClass(score: number) {
-  if (score >= 17) return "text-score-excellent";
-  if (score >= 15) return "text-score-good";
-  if (score >= 13) return "text-score-mid";
-  return "text-score-low";
-}
-
 export default function AuditPage() {
   const router = useRouter();
   const [step, setStep] = useState<Step>(1);
@@ -136,10 +129,9 @@ export default function AuditPage() {
     return "En cours";
   }
 
-  function statusBadgeClass(status: "Non démarré" | "En cours" | "Terminé") {
-    if (status === "Terminé") return "border-transparent bg-secondary text-secondary-foreground";
-    if (status === "En cours") return "border-transparent bg-accent text-accent-foreground";
-    return "border-transparent bg-muted text-muted-foreground";
+  function statusBadgeVariant(status: "Non démarré" | "En cours" | "Terminé") {
+    if (status === "Terminé") return "default" as const;
+    return "secondary" as const;
   }
 
   function goToResults() {
@@ -169,7 +161,7 @@ export default function AuditPage() {
                   value={restaurant}
                   onValueChange={(value) => setRestaurant(value ?? "")}
                 >
-                  <SelectTrigger className="focus-visible:ring-2 focus-visible:ring-ring">
+                  <SelectTrigger>
                     <SelectValue placeholder="Sélectionner un restaurant" />
                   </SelectTrigger>
                   <SelectContent>
@@ -187,7 +179,6 @@ export default function AuditPage() {
                   placeholder="Ex: Aminata D."
                   value={auditor}
                   onChange={(e) => setAuditor(e.target.value)}
-                  className="focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>
             </CardContent>
@@ -196,7 +187,6 @@ export default function AuditPage() {
                 className="w-full"
                 disabled={!canStart}
                 onClick={() => setStep(2)}
-                style={{ backgroundColor: "var(--brand)", color: "var(--brand-foreground)" }}
               >
                 Commencer l&apos;audit →
               </Button>
@@ -209,11 +199,11 @@ export default function AuditPage() {
         <div>
           <div className="mb-6 flex items-center gap-2 text-sm">
             <span className="flex items-center gap-1.5 text-muted-foreground">
-              <Check className="h-4 w-4" style={{ color: "var(--success)" }} />
+              <Check className="h-4 w-4 text-primary" />
               Sélection
             </span>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium" style={{ color: "var(--brand)" }}>
+            <span className="font-medium text-primary">
               Audit
             </span>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
@@ -242,18 +232,18 @@ export default function AuditPage() {
                             <div className="flex items-center gap-3">
                               <ChevronDown
                                 className={cn(
-                                  "h-4 w-4 transition-transform",
+                                  "h-4 w-4 text-muted-foreground transition-transform",
                                   expandedSections[section.id] && "rotate-180",
                                 )}
                               />
                               <CardTitle className="text-sm font-semibold">{section.name}</CardTitle>
-                              <Badge className={statusBadgeClass(status)}>{status}</Badge>
+                              <Badge variant={statusBadgeVariant(status)}>{status}</Badge>
                             </div>
                             <div className="flex items-center gap-4 text-sm text-muted-foreground">
                               <span>
                                 {counters.answered}/{counters.total} rép.
                               </span>
-                              <span className="font-semibold">{sectionScore.toFixed(1)} / 20</span>
+                              <span className="font-semibold text-foreground">{sectionScore.toFixed(1)} / 20</span>
                             </div>
                           </div>
                         </CardHeader>
@@ -279,7 +269,7 @@ export default function AuditPage() {
                                             setObsOpen((prev) => ({ ...prev, [q.id]: open }))
                                           }
                                         >
-                                          <CollapsibleTrigger className="mt-1 text-xs text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                                          <CollapsibleTrigger className="mt-1 text-xs text-muted-foreground hover:text-foreground">
                                             + Observation
                                           </CollapsibleTrigger>
                                           <CollapsibleContent>
@@ -300,16 +290,11 @@ export default function AuditPage() {
                                           type="button"
                                           onClick={() => updateAnswer(q.id, "oui")}
                                           className={cn(
-                                            "rounded-md border px-3 py-1.5 text-xs font-medium transition-all",
+                                            "rounded-md border px-3 py-1.5 text-xs font-medium transition-colors",
                                             answer?.value === "oui"
-                                              ? "border-transparent text-primary-foreground"
-                                              : "border-border bg-background text-muted-foreground hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                                              ? "border-primary bg-primary text-primary-foreground"
+                                              : "border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground",
                                           )}
-                                          style={
-                                            answer?.value === "oui"
-                                              ? { backgroundColor: "var(--success)" }
-                                              : undefined
-                                          }
                                         >
                                           Oui
                                         </button>
@@ -317,16 +302,11 @@ export default function AuditPage() {
                                           type="button"
                                           onClick={() => updateAnswer(q.id, "non")}
                                           className={cn(
-                                            "rounded-md border px-3 py-1.5 text-xs font-medium transition-all",
+                                            "rounded-md border px-3 py-1.5 text-xs font-medium transition-colors",
                                             answer?.value === "non"
-                                              ? "border-transparent text-primary-foreground"
-                                              : "border-border bg-background text-muted-foreground hover:border-destructive hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                                              ? "border-foreground bg-foreground text-background"
+                                              : "border-border bg-background text-muted-foreground hover:border-foreground/50 hover:text-foreground",
                                           )}
-                                          style={
-                                            answer?.value === "non"
-                                              ? { backgroundColor: "var(--danger)" }
-                                              : undefined
-                                          }
                                         >
                                           Non
                                         </button>
@@ -353,9 +333,7 @@ export default function AuditPage() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="text-center">
-                      <div
-                        className={cn("text-5xl font-bold tabular-nums", scoreValueClass(score.global))}
-                      >
+                      <div className="text-5xl font-bold tabular-nums text-primary">
                         {score.global.toFixed(1)}
                       </div>
                       <div className="mt-1 text-sm text-muted-foreground">/20</div>
@@ -374,7 +352,6 @@ export default function AuditPage() {
                       <Progress
                         value={(score.totalAnswered / 355) * 100}
                         className="h-1.5"
-                        style={{ "--progress-color": "var(--primary)" } as React.CSSProperties}
                       />
                     </div>
                     <Separator />
@@ -393,7 +370,6 @@ export default function AuditPage() {
                       size="sm"
                       onClick={goToResults}
                       disabled={score.totalAnswered === 0}
-                      style={{ backgroundColor: "var(--brand)", color: "var(--brand-foreground)" }}
                     >
                       Voir la synthèse →
                     </Button>

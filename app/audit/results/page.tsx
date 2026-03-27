@@ -19,7 +19,6 @@ import { Separator } from "@/components/ui/separator";
 import type { Answer } from "@/lib/questions";
 import { questions } from "@/lib/questions";
 import { calculateScore, getScoreMeta } from "@/lib/scoring";
-import { cn } from "@/lib/utils";
 
 type AuditPayload = {
   restaurant: string;
@@ -27,20 +26,6 @@ type AuditPayload = {
   date: string;
   answers: Answer[];
 };
-
-function scoreValueClass(score: number) {
-  if (score >= 17) return "text-score-excellent";
-  if (score >= 15) return "text-score-good";
-  if (score >= 13) return "text-score-mid";
-  return "text-score-low";
-}
-
-function getProgressVar(score: number) {
-  if (score >= 17) return "var(--progress-excellent)";
-  if (score >= 15) return "var(--progress-good)";
-  if (score >= 13) return "var(--progress-mid)";
-  return "var(--progress-low)";
-}
 
 export default function ResultsPage() {
   const [payload, setPayload] = useState<AuditPayload | null>(null);
@@ -115,23 +100,23 @@ export default function ResultsPage() {
       <div className="space-y-6">
         <Link
           href="/audit"
-          className="inline-flex text-sm text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="inline-flex text-sm text-primary underline-offset-4 hover:underline"
         >
           ← Retourner à l&apos;audit
         </Link>
 
         <div className="flex items-center gap-2 text-sm">
           <span className="flex items-center gap-1.5 text-muted-foreground">
-            <Check className="h-4 w-4" style={{ color: "var(--success)" }} />
+            <Check className="h-4 w-4 text-primary" />
             Sélection
           </span>
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
           <span className="flex items-center gap-1.5 text-muted-foreground">
-            <Check className="h-4 w-4" style={{ color: "var(--success)" }} />
+            <Check className="h-4 w-4 text-primary" />
             Audit
           </span>
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
-          <span className="font-medium" style={{ color: "var(--brand)" }}>
+          <span className="font-medium text-primary">
             Synthèse
           </span>
         </div>
@@ -147,7 +132,7 @@ export default function ResultsPage() {
             </div>
             <Separator />
             <div className="text-center">
-              <div className={cn("text-5xl font-bold tabular-nums", scoreValueClass(score.global))}>
+              <div className="text-5xl font-bold tabular-nums text-primary">
                 {score.global.toFixed(1)}
               </div>
               <div className="mt-1 text-sm text-muted-foreground">/20</div>
@@ -173,11 +158,6 @@ export default function ResultsPage() {
               <Progress
                 value={((score.bySection.experience_client ?? 0) / 20) * 100}
                 className="h-2"
-                style={
-                  {
-                    "--progress-color": getProgressVar(score.bySection.experience_client ?? 0),
-                  } as React.CSSProperties
-                }
               />
             </div>
             <div className="space-y-2">
@@ -188,11 +168,6 @@ export default function ResultsPage() {
               <Progress
                 value={((score.bySection.technique ?? 0) / 20) * 100}
                 className="h-2"
-                style={
-                  {
-                    "--progress-color": getProgressVar(score.bySection.technique ?? 0),
-                  } as React.CSSProperties
-                }
               />
             </div>
             <div className="space-y-2">
@@ -203,11 +178,6 @@ export default function ResultsPage() {
               <Progress
                 value={((score.bySection.admin_gestion ?? 0) / 20) * 100}
                 className="h-2"
-                style={
-                  {
-                    "--progress-color": getProgressVar(score.bySection.admin_gestion ?? 0),
-                  } as React.CSSProperties
-                }
               />
             </div>
           </CardContent>
@@ -234,7 +204,7 @@ export default function ResultsPage() {
         <div className="grid gap-4 md:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle>Points forts (⭐)</CardTitle>
+              <CardTitle>Points forts</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
               {synthese.sortedOui.map((item) => (
@@ -244,7 +214,7 @@ export default function ResultsPage() {
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>Points à améliorer (⚠)</CardTitle>
+              <CardTitle>Points à améliorer</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
               {synthese.sortedNon.map((item) => (
@@ -256,7 +226,7 @@ export default function ResultsPage() {
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>Recommandations (💡)</CardTitle>
+              <CardTitle>Recommandations</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
               {synthese.recos.map((item) => (
@@ -266,7 +236,7 @@ export default function ResultsPage() {
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>Conclusion (✅)</CardTitle>
+              <CardTitle>Conclusion</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
               <p>
@@ -283,8 +253,7 @@ export default function ResultsPage() {
 
         <Button
           className="w-full"
-          onClick={() => toast.success("Rapport PDF généré et envoyé par email ✓")}
-          style={{ backgroundColor: "var(--brand)", color: "var(--brand-foreground)" }}
+          onClick={() => toast.success("Rapport PDF généré et envoyé par email")}
         >
           Générer le rapport
         </Button>
@@ -292,7 +261,7 @@ export default function ResultsPage() {
         <div className="flex justify-center">
           <Link
             href="/"
-            className="text-sm text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="text-sm text-primary underline-offset-4 hover:underline"
           >
             Retour au tableau de bord
           </Link>
