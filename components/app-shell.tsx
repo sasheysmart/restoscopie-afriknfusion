@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, Menu, PlusCircle } from "lucide-react";
+import { BarChart3, PlusCircle } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -14,10 +14,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -39,7 +37,7 @@ function breadcrumbFromPath(pathname: string): string {
 function SidebarNav({ pathname }: { pathname: string }) {
   return (
     <Sidebar
-      collapsible="none"
+      collapsible="offcanvas"
       className="w-[240px] border-r border-[#E5E7EB] bg-white"
       style={{ "--sidebar-width": "240px" } as React.CSSProperties}
     >
@@ -59,17 +57,15 @@ function SidebarNav({ pathname }: { pathname: string }) {
                 return (
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton
-                      asChild
+                      render={<Link href={item.href} />}
                       isActive={active}
                       className={cn(
                         "h-10 rounded-lg border-l-2 border-transparent px-3 text-sm font-medium text-[#6B7280] hover:bg-[#F9FAFB] hover:text-[#111827]",
                         active && "border-l-[#D4521A] bg-[#FFF7F2] text-[#D4521A]",
                       )}
                     >
-                      <Link href={item.href}>
-                        <Icon className="size-4" />
-                        <span>{item.label}</span>
-                      </Link>
+                      <Icon className="size-4" />
+                      <span>{item.label}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );
@@ -94,19 +90,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="mx-auto w-full max-w-[1280px] px-4 py-5 md:px-8">
           <div className="mb-6 flex items-center justify-between border-b border-[#E5E7EB] pb-4">
             <div className="flex items-center gap-2">
-              <div className="md:hidden">
-                <Sheet>
-                  <SheetTrigger asChild>
-                    <Button variant="outline" size="icon">
-                      <Menu className="size-4" />
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent side="left" className="w-[240px] p-0">
-                    <SidebarNav pathname={pathname} />
-                  </SheetContent>
-                </Sheet>
-              </div>
-              <SidebarTrigger className="hidden md:inline-flex" />
+              <SidebarTrigger className="md:hidden" />
               <h1 className="text-2xl font-bold text-[#111827]">{title}</h1>
             </div>
             <p className="text-xs font-medium uppercase tracking-wide text-[#6B7280]">
