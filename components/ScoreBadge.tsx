@@ -1,16 +1,21 @@
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import { getScoreMeta } from "@/lib/scoring";
 
 export function ScoreBadge({ score }: { score: number }) {
   const meta = getScoreMeta(score);
-  const classes =
+  const tierClass =
     meta.label === "Excellent"
-      ? "bg-[#DCFCE7] text-[#16A34A]"
+      ? "badge-score-excellent"
       : meta.label === "Bien"
-        ? "bg-[#DBEAFE] text-[#2563EB]"
+        ? "badge-score-good"
         : meta.label === "Moyen"
-          ? "bg-[#FEF3C7] text-[#D97706]"
-          : "bg-[#FEE2E2] text-[#DC2626]";
+          ? "badge-score-mid"
+          : "badge-score-low";
 
-  return <Badge className={classes}>{meta.label}</Badge>;
+  return (
+    <Badge variant="default" className={cn("rounded-full", tierClass)}>
+      {meta.label}
+    </Badge>
+  );
 }
